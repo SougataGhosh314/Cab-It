@@ -134,17 +134,6 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         //service Intent initialization
         i=new Intent(this, LocationUpdater.class);
 
-
-
-      /*  FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-
         //for drawerlayout
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -321,15 +310,6 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-   /* private void loadFragment(Fragment fragment) {
-        // create a FragmentManager
-        // create a FragmentTransaction to begin the transaction and replace the Fragment
-        fragmentTransaction=getSupportFragmentManager().beginTransaction();
-        // replace the FrameLayout with new Fragment
-        fragmentTransaction.replace(R.id.frameLayout, fragment);
-        // save the changes
-        fragmentTransaction.commit();
-    }*/
    @Override
    public void onBackPressed() {
        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -376,8 +356,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
             try {
 
-                //internetStatus();
-                URL url = new URL("http://192.168.43.29/cgi-bin/Pune/GPSUpdate/GPSUpdate.out"); // here is your URL path
+                URL url = new URL(getResources().getString(R.string.gpsUpdate));// here is your URL path
 
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(15000 /* milliseconds */);
@@ -387,11 +366,8 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                 conn.setDoOutput(true);
                 String cc = prefs.getString("countryCode", null);
                 String sc = prefs.getString("stateCode", null);
-                String restoredText = cc+sc+prefs.getString("vehicleno", null);
-                Log.d("status", restoredText);
+                String restoredText = cc+sc+prefs.getString("vehicleno", null); //concatatinating countrycode+statecode+vehicleno
                 String restoredText11 = prefs.getString("phoneno1", null);
-
-                //  Toast.makeText(getApplicationContext(),restoredText,Toast.LENGTH_LONG).show();
 
                 String s="reg="+restoredText+"_"+restoredText11+"&lat="+strtLan+"&lon="+strtLong;
                 OutputStream os = conn.getOutputStream();
@@ -438,36 +414,8 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
         @Override
         protected void onPostExecute(String result) {
-            String restoredText = prefs.getString("detail", null);
-            Toast.makeText(getApplicationContext(),restoredText,Toast.LENGTH_LONG).show();
-            Log.d("gpsupdateresponse",result);
-          Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
+            Log.d("task",result);
         }
-    }
-
-    public String getPostDataString(JSONObject params) throws Exception {
-
-        StringBuilder result = new StringBuilder();
-        boolean first = true;
-
-        Iterator<String> itr = params.keys();
-
-        while(itr.hasNext()){
-
-            String key= itr.next();
-            Object value = params.get(key);
-
-            if (first)
-                first = false;
-            else
-                result.append("&");
-
-            result.append(URLEncoder.encode(key, "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(value.toString(), "UTF-8"));
-
-        }
-        return result.toString();
     }
 
 }

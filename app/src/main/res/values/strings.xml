@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">betaD</string>
+    <string name="registration_url">http://192.168.43.29/cgi-bin/Pune/DriverRegister/DriverRegister.out</string>
+    <string name="gpsUpdate">http://192.168.43.29/cgi-bin/Pune/GPSUpdate/GPSUpdate.out</string>
     <string name="api_key">AIzaSyDPuv30D0vjB-rHbtftccPLSa1Rx6k1-8g</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

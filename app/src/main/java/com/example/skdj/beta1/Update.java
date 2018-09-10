@@ -41,54 +41,45 @@ import javax.net.ssl.HttpsURLConnection;
 public class Update extends AppCompatActivity implements  AdapterView.OnItemSelectedListener{
 
     EditText fullName, vehicleno, phoneNumber_1, phoneNumber_2, emisc, countryCode, stateCode;
-    String name,vehcno,pno1,pno2,vehctype,Smisc, conCode, stCode, vehicleType;
-    TextView textShow;
-    Button updateButton, backButton;
+    String name,vehcno,pno1,pno2,Smisc, conCode, stCode, vehicleType;
+    Button updateButton;
     String country="";
     String state="";
-    int flag;
     Spinner dropdown_1,dropdown_2,dropdown_3;
     ProgressDialog mprogress;
+    int flag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        flag=0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.form);
-
+        flag=0;
         mprogress = new ProgressDialog(this);
-
+        //Initialize the Views
         fullName = (EditText) findViewById(R.id.fullName);
         phoneNumber_1 = (EditText) findViewById(R.id.phoneNumber_1);
         phoneNumber_2 = (EditText) findViewById(R.id.phoneNumber_2);
         vehicleno = (EditText) findViewById(R.id.vehicleNo);
-       // vehicleType = (EditText) findViewById(R.id.vehicleType);
         emisc = (EditText) findViewById(R.id.misc);
         updateButton = (Button) findViewById(R.id.updateButton);
         countryCode = (EditText) findViewById(R.id.countryCode);
         stateCode = (EditText) findViewById(R.id.stateCode);
-
+        //Intialize sharedPref. to get the locally saved data
         SharedPreferences prefs = getSharedPreferences(new MainActivity().MY_PREFS_NAME, MODE_PRIVATE);
-
         String prefname = prefs.getString("name", null);
         String prefvno=prefs.getString("vehicleno", null);
         String prefpno1=prefs.getString("phoneno1", null);
         String prefpno2=prefs.getString("phoneno2", null);
         String prefvehctype=prefs.getString("vehicletype", null);
-        Log.d("spinner", "in getstring "+prefvehctype);
         String prefmisc=prefs.getString("misc", null);
         String prefconCode = prefs.getString("countryCode", null);
         String prefstCode = prefs.getString("stateCode", null);
+        //Setting text in views
         fullName.setText(prefname);
         phoneNumber_1.setText(prefpno1);
         phoneNumber_2.setText(prefpno2);
         vehicleno.setText(prefvno);
-
-
-
-        //vehicleType.setText(prefvehctype);
         emisc.setText(prefmisc);
-
         countryCode.setText(prefconCode);
         stateCode.setText(prefstCode);
 
@@ -114,37 +105,25 @@ public class Update extends AppCompatActivity implements  AdapterView.OnItemSele
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dropdown_3.setAdapter(adapter_3);
         dropdown_3.setOnItemSelectedListener(this);
+        //Convert vehicle type array in String.xml res file to List
         List<String> options= Arrays.asList(getResources().getStringArray(R.array.vehicle_types));
-        Toast.makeText(this, prefvehctype, Toast.LENGTH_SHORT).show();
-        Log.d("spinner", options.indexOf(prefvehctype)+"");
+        //Set vehicle type to the saved type
         dropdown_3.setSelection(options.indexOf(prefvehctype));
-       /* backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(FormActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });*/
-
-
-
     }
-
+    //Submit Button on Click
     public void hero(final View v)
     {
         if(CheckNetwork.isInternetAvailable(Update.this)) //returns true if internet available
         {
 
             name= fullName.getText().toString();
-            String toAppend = countryCode.getText().toString() + stateCode.getText().toString();
-            vehcno= toAppend + vehicleno.getText().toString();
+            vehcno=vehicleno.getText().toString();
             pno1= phoneNumber_1.getText().toString();
             pno2= phoneNumber_2.getText().toString();
             Smisc=emisc.getText().toString();
-
             conCode = countryCode.getText().toString();
             stCode = stateCode.getText().toString();
-
+            //Simple form validation
             if (TextUtils.isEmpty(name)) {
                 fullName.setError("You can't leave empty");
                 return;
@@ -184,10 +163,7 @@ public class Update extends AppCompatActivity implements  AdapterView.OnItemSele
                 stateCode.setError("Choose state from top");
                 return;
             }
-
-
-
-
+            //Show Progress Dialog
             mprogress.setTitle("Updating User");
             mprogress.setMessage("please wait while registering the user");
             mprogress.setCanceledOnTouchOutside(false);
@@ -196,15 +172,11 @@ public class Update extends AppCompatActivity implements  AdapterView.OnItemSele
         }
         else
         {
-
             View parentlayout = findViewById(android.R.id.content);
             Snackbar.make(parentlayout, "No internet Connection", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Try Again", new View.OnClickListener() {;
                         @Override
                         public void onClick(View view) {
-
-                            //Intent intent=new Intent(getApplicationContext(),Update.class);
-                            //startActivity(intent);
                             hero(v);
 
                         }
@@ -234,17 +206,9 @@ public class Update extends AppCompatActivity implements  AdapterView.OnItemSele
 
                 try {
 
-                    URL url = new URL("http://192.168.43.29/cgi-bin/Pune/DriverRegister/DriverRegister.out"); // here is your URL path
-
-                  /*  JSONObject postDataParams = new JSONObject();
-
-                    postDataParams.put("plateno", vehcno+"_"+pno1);
-                    postDataParams.put("altno", pno2);
-                    postDataParams.put("type", vehctype);
-                    postDataParams.put("name", name);
-                    postDataParams.put("misc", Smisc);
-                    Log.e("params",postDataParams.toString());
-        */
+                    URL url = new URL(getResources().getString(R.string.registration_url)); // here is your URL path
+                    Log.d("task", "update "+vehicleType);
+                    //Convert String vehicle type to int
                     int vt;
                     if(vehicleType.equals("Bike")) {
                         vt = 1;
@@ -261,8 +225,8 @@ public class Update extends AppCompatActivity implements  AdapterView.OnItemSele
                     }
                     else
                         vt=0;
-
-                    String tosend=("reg="+vehcno+"_"+pno1+"&phoneNumber="+pno2+"&type="+vt+"&name="+name+"&misc="+Smisc);
+                    Log.d("task", "in Update " +vt);
+                    String tosend=("reg="+conCode+stCode+vehcno+"_"+pno1+"&phoneNumber="+pno2+"&type="+vt+"&name="+name+"&misc="+Smisc);
                     tosend=tosend.replace(" ", "+");
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setReadTimeout(15000 /* milliseconds */);
@@ -283,9 +247,7 @@ public class Update extends AppCompatActivity implements  AdapterView.OnItemSele
                     int responseCode=conn.getResponseCode();
 
                     if (responseCode == HttpsURLConnection.HTTP_OK) {
-                         flag=1;
-                        flag=1;
-
+                       flag=1;
                         InputStream is = null;
                         try {
                             is = conn.getInputStream();
@@ -318,14 +280,15 @@ public class Update extends AppCompatActivity implements  AdapterView.OnItemSele
 
             @Override
             protected void onPostExecute(String result) {
-                if(flag==1) {
-                    SharedPreferences.Editor editor = getSharedPreferences(new MainActivity().MY_PREFS_NAME, MODE_PRIVATE).edit();
+                mprogress.dismiss();
+                if(flag==1)
+                {   SharedPreferences.Editor editor = getSharedPreferences(new MainActivity().MY_PREFS_NAME, MODE_PRIVATE).edit();
                     editor.putString("name", name);
                     editor.putString("vehicleno", vehicleno.getText().toString());
                     editor.putString("phoneno1", pno1);
                     editor.putString("phoneno2", pno2);
-                    Log.d("spinner", "in putstring "+vehctype);
-                    editor.putString("vehicletype", vehctype);
+                    Log.d("task", "in putstring "+vehicleType);
+                    editor.putString("vehicletype", vehicleType);
                     editor.putString("misc", Smisc);
                     editor.putString("countryCode", conCode);
                     editor.putString("stateCode", stCode);
@@ -334,43 +297,19 @@ public class Update extends AppCompatActivity implements  AdapterView.OnItemSele
 
                     Log.d("task",result);
 
-                    mprogress.dismiss();
+
                     Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(i);
                 }
                 else
                 {
-                    Toast.makeText(getApplicationContext(),"error, tryagain",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"error, try again",Toast.LENGTH_SHORT).show();
                 }
             }
         }
 
-        public String getPostDataString(JSONObject params) throws Exception {
-
-            StringBuilder result = new StringBuilder();
-            boolean first = true;
-
-            Iterator<String> itr = params.keys();
-
-            while(itr.hasNext()){
-
-                String key= itr.next();
-                Object value = params.get(key);
-
-                if (first)
-                    first = false;
-                else
-                    result.append("&");
-
-                result.append(URLEncoder.encode(key, "UTF-8"));
-                result.append("=");
-                result.append(URLEncoder.encode(value.toString(), "UTF-8"));
-
-            }
-            return result.toString();
-        }
-
+        //Handling the Spinner onSelect
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
@@ -383,9 +322,8 @@ public class Update extends AppCompatActivity implements  AdapterView.OnItemSele
                 }
                 break;
             case R.id.vehicleType:
-                vehctype = (String) parent.getItemAtPosition(position);
-                Log.d("spinner", "In on select "+vehctype);
-                vehicleType=vehctype;
+                vehicleType = (String) parent.getItemAtPosition(position);
+                Log.d("spinner", "In on select "+vehicleType);
                 break;
             case R.id.statesSpinner:
                 state = (String) parent.getItemAtPosition(position);

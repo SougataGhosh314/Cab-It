@@ -34,7 +34,7 @@ import java.util.Iterator;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class FormActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class FormActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     EditText fullName;
     EditText vehicleno;
@@ -45,8 +45,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
     EditText countryCode;
     EditText stateCode;
     String name,vehcno,pno1,pno2,vehctype,Smisc, conCode, stCode, vehType;
-    TextView textShow;
-    Button updateButton, backButton;
+    Button updateButton;
     String country, state;
     int flag=0;
     ProgressDialog mprogress;
@@ -56,27 +55,26 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         flag=0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.form);
-
+         //Update Button initilize with view
         updateButton = (Button) findViewById(R.id.updateButton);
+        //Progress initialize
         mprogress = new ProgressDialog(this);
-
+        //Country spinner initialize
         Spinner dropdown_1 = findViewById(R.id.countrySpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.countries, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dropdown_1.setAdapter(adapter);
         dropdown_1.setSelection(1);
-
-        dropdown_1.setOnItemSelectedListener(this);
-
+        dropdown_1.setOnItemSelectedListener(this); //Setting Listener
+        //State spinner
         Spinner dropdown_2 = findViewById(R.id.statesSpinner);
         ArrayAdapter<CharSequence> adapter_2 = ArrayAdapter.createFromResource(this,
                 R.array.india_states, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dropdown_2.setAdapter(adapter_2);
         dropdown_2.setSelection(36);
-
-        dropdown_2.setOnItemSelectedListener(this);
+        dropdown_2.setOnItemSelectedListener(this);//setting Listener
 
         //get the spinner from the xml.
         Spinner dropdown_3 = findViewById(R.id.vehicleType);
@@ -84,42 +82,28 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
                 R.array.vehicle_types, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         dropdown_3.setAdapter(adapter_3);
-        //dropdown_2.setSelection(vtype-1);
         dropdown_3.setOnItemSelectedListener(this);
-
-
-       /* backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(FormActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });*/
     }
+       //Function To be executed after Submit Button Click
        public void hero(View v) {
 
            if(CheckNetwork.isInternetAvailable(FormActivity.this)) //returns true if internet available
            {
-
-               //do something. loadwebview.
-               //Toast.makeText(FormActivity.this,"Internet Connection",Toast.LENGTH_LONG).show();
+               //Initialize views
                fullName = (EditText) findViewById(R.id.fullName);
                phoneNumber_1 = (EditText) findViewById(R.id.phoneNumber_1);
                phoneNumber_2 = (EditText) findViewById(R.id.phoneNumber_2);
                vehicleno = (EditText) findViewById(R.id.vehicleNo);
-               //vehicleType = (EditText) findViewById(R.id.vehicleType);
                misc = (EditText) findViewById(R.id.misc);
-
+               //Getting the value from all the views
                name= fullName.getText().toString();
-               String toAppend = countryCode.getText().toString() + stateCode.getText().toString();
-               vehcno= toAppend + vehicleno.getText().toString();
+               vehcno= vehicleno.getText().toString();
                pno1= phoneNumber_1.getText().toString();
                pno2= phoneNumber_2.getText().toString();
-               vehctype= vehicleType;
                Smisc=misc.getText().toString();
-               conCode = countryCode.getText().toString();
-               stCode = stateCode.getText().toString();
-
+               conCode = countryCode.getText().toString(); //Getting text from country edittext
+               stCode = stateCode.getText().toString(); //Getting text from  state edittext
+               //A simple validation of the form
                if (TextUtils.isEmpty(name)) {
                    fullName.setError("You can't leave empty");
                    return;
@@ -160,13 +144,12 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
                    stateCode.setError("Choose state from top");
                    return;
                }
-
-
+               //Start the progress dialog
                mprogress.setTitle("Updating User");
                mprogress.setMessage("please wait while registering the user");
                mprogress.setCanceledOnTouchOutside(false);
                mprogress.show();
-               Communicate();
+               new SendPostRequest().execute();// Start the registration in server
            }
            else
            {
@@ -194,14 +177,8 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
     public void onBackPressed() {
         moveTaskToBack(true);
     }
-    @Override
-    public void onClick(View v) {
 
-    }
-
-    public void Communicate(){
-          new SendPostRequest().execute();
-    }
+    //Sending post request to server
     private class SendPostRequest extends AsyncTask<String, Void, String> {
 
         protected void onPreExecute(){}
@@ -209,19 +186,11 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         protected String doInBackground(String... arg0) {
 
             try {
-
-                URL url = new URL("http://192.168.43.29/cgi-bin/Pune/DriverRegister/DriverRegister.out"); // here is your URL path
-
-              //  String tosend= "reg=4uwx&phoneNumber=fdsfdsa&type=fsdfds&name=fdsf&misc=fdsf";
-               /* JSONObject postDataParams = new JSONObject();
-
-                postDataParams.put("plateno", vehcno+"_"+pno1);
-                postDataParams.put("altno", pno2);
-                postDataParams.put("type", vehctype);
-                postDataParams.put("name", name);
-                postDataParams.put("misc", Smisc);
-                Log.e("params",postDataParams.toString());*/
-               int vt;
+                //Get the URL
+                URL url= new URL(getResources().getString(R.string.registration_url));
+                //Get the number from vehicle Type string
+                Log.d("task", "Form "+vehicleType);
+                int vt;
                 if(vehicleType.equals("Bike")) {
                     vt = 1;
                 }else if(vehicleType.equals("Auto")) {
@@ -237,7 +206,8 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 else
                     vt=0;
-                String tosend="reg="+vehcno+"_"+pno1+"&phoneNumber="+pno2+"&type="+vt+"&name="+name+"&misc="+Smisc;
+                Log.d("task", "Form "+vt);
+                String tosend="reg="+conCode+stCode+vehcno+"_"+pno1+"&phoneNumber="+pno2+"&type="+vt+"&name="+name+"&misc="+Smisc;//Making string that has to be send
                 tosend = tosend.replace(" ","+");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(15000 /* milliseconds */);
@@ -256,11 +226,10 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
                 os.close();
 
                 int responseCode=conn.getResponseCode();
-
+                //Getting the response
                 if (responseCode == HttpsURLConnection.HTTP_OK)
-
-                {   flag=1;
-
+                {
+                    flag=1;
                         InputStream is = null;
                         try {
                             is = conn.getInputStream();
@@ -291,59 +260,32 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         protected void onPostExecute(String result) {
-            if(flag==1) {
-               SharedPreferences.Editor editor = getSharedPreferences(new MainActivity().MY_PREFS_NAME, MODE_PRIVATE).edit();
-                editor.putString("name", name);
-                editor.putString("vehicleno", vehicleno.getText().toString());
-                editor.putString("phoneno1", pno1);
-                editor.putString("phoneno2", pno2);
-                Log.d("spinner", "in Form post exe"+vehicleType);
-                editor.putString("vehicletype", vehicleType);
-                editor.putString("misc", Smisc);
-                editor.putString("countryCode", conCode);
-                editor.putString("stateCode", stCode);
-
-                editor.apply();
-                Log.d("updateX",result);
-
-                Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
-                mprogress.dismiss();
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(i);
-            }
-            else
-            {
-                Toast.makeText(getApplicationContext(),"error, tryagain",Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    public String getPostDataString(JSONObject params) throws Exception {
-
-        StringBuilder result = new StringBuilder();
-        boolean first = true;
-
-        Iterator<String> itr = params.keys();
-
-        while(itr.hasNext()){
-
-            String key= itr.next();
-            Object value = params.get(key);
-
-            if (first)
-                first = false;
-            else
-                result.append("&");
-
-            result.append(URLEncoder.encode(key, "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(value.toString(), "UTF-8"));
+             if(flag==1) {
+                 //Save the new data locally
+                 SharedPreferences.Editor editor = getSharedPreferences(new MainActivity().MY_PREFS_NAME, MODE_PRIVATE).edit();
+                 editor.putString("name", name);
+                 editor.putString("vehicleno",vehcno);
+                 editor.putString("phoneno1", pno1);
+                 editor.putString("phoneno2", pno2);
+                 Log.d("task", vehicleType);
+                 editor.putString("vehicletype", vehicleType);
+                 editor.putString("misc", Smisc);
+                 editor.putString("countryCode", conCode);
+                 editor.putString("stateCode", stCode);
+                 editor.apply();
+                 Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+                 mprogress.dismiss();
+                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                 startActivity(i);
+             }else
+             {
+                 mprogress.dismiss();
+                 Toast.makeText(getApplicationContext(), "Server Busy, Try Again", Toast.LENGTH_SHORT).show();
+             }
 
         }
-        return result.toString();
     }
-
-
+    //Different Listener for the  the spinner
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
@@ -356,9 +298,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.vehicleType:
-                vehType = (String) parent.getItemAtPosition(position);
-                Log.d("spinner", "in Form listener "+vehType);
-                vehicleType=vehType;
+                vehicleType = (String) parent.getItemAtPosition(position);
                 break;
             case R.id.statesSpinner:
                 state = (String) parent.getItemAtPosition(position);
