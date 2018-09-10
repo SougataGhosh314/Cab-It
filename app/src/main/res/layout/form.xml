@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#1C0540"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/countryText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/countrySpinner"
+        android:layout_alignTop="@+id/stateText"
+        android:text="Country" />
+
+    <Spinner
+        android:id="@+id/statesSpinner"
+        android:layout_width="160dp"
+        android:layout_height="34dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="21dp"
+        android:layout_marginTop="44dp"
+        android:background="#D3D3D3" />
+
+    <Spinner
+        android:id="@+id/countrySpinner"
+        android:layout_width="115dp"
+        android:layout_height="34dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/statesSpinner"
+        android:layout_marginStart="27dp"
+        android:background="#D3D3D3"
+        tools:ignore="RtlCompat" />
+
+
+    <TextView
+        android:id="@+id/stateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/statesSpinner"
+        android:layout_marginTop="14dp"
+        android:text="State" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="384dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
+
+        <EditText
+            android:id="@+id/fullName"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Name"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/countryCode"
+            android:focusable="false"
+            android:layout_width="68dp"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/fullName"
+            android:layout_alignTop="@+id/vehicleNo"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="IND"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/stateCode"
+            android:focusable="false"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/vehicleNo"
+            android:layout_marginEnd="18dp"
+            android:layout_toStartOf="@+id/vehicleNo"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="MH"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/vehicleNo"
+            android:layout_width="199dp"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/fullName"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="58dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Vehicle No"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/phoneNumber_1"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/fullName"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="119dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Phone No."
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/phoneNumber_2"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/fullName"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="158dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Alternate Phone no"
+            android:inputType="number" />
+
+        <Spinner
+            android:id="@+id/vehicleType"
+            android:layout_width="140dp"
+            android:layout_height="35dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="65dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown"
+            android:dropDownWidth="match_parent"/>
+
+        <EditText
+            android:id="@+id/misc"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Misc"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/typeView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="117dp"
+            android:text="Choose vehicle type" />
+
+    </RelativeLayout>
+    <Button
+        android:id="@+id/updateButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:background="#000"
+        android:onClick="hero"
+
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="18dp"
+        android:text="Update" />
+
+</RelativeLayout>
