@@ -207,7 +207,7 @@ public class Update extends AppCompatActivity implements  AdapterView.OnItemSele
                 try {
 
                     URL url = new URL(getResources().getString(R.string.registration_url)); // here is your URL path
-                    Log.d("task", "update "+vehicleType);
+                    Log.d("task", "update"+vehicleType);
                     //Convert String vehicle type to int
                     int vt;
                     if(vehicleType.equals("Bike")) {
