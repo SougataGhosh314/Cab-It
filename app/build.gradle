@@ -29,4 +29,10 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
 
     implementation 'com.google.android.gms:play-services-location:15.0.1'
+    //Button Transition lIb
+    implementation 'com.github.MAXDeliveryNG:slideview:1.1.0'
+    //Notification
+    implementation "com.android.support:support-compat:27.1.1"
+    //Dialog box
+    implementation 'com.github.javiersantos:MaterialStyledDialogs:2.1'
 }

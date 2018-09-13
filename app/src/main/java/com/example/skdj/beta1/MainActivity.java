@@ -2,6 +2,7 @@ package com.example.skdj.beta1;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
@@ -32,6 +34,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -39,6 +42,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -64,6 +70,8 @@ import java.util.Iterator;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import ng.max.slideview.SlideView;
+
 public class MainActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     public static final String fl = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -87,7 +95,6 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
             strtLan=intent.getDoubleExtra("latitude", 0.0);
             strtLong=intent.getDoubleExtra("longitude", 0.0);
-            new SendLocation().execute();
             Log.d("Location",strtLan+"  "+strtLong);
         }
     };
@@ -128,9 +135,75 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
             window.addFlags(flags);
         }
 
+        registerReceiver(broadcastReceiver, new IntentFilter(LocationUpdater.BD_KEY));
+
 
         setContentView(R.layout.activity_main);
+        //To check if opened from notification
+         if(getIntent().getIntExtra("FromNotification", 0)!=0)
+         {
+             Log.d("Location", "Intent");
+             final View namebar = findViewById(R.id.slideView);
+             final ViewGroup parent = (ViewGroup) namebar.getParent();
+             if (parent != null) {
+                 parent.removeView(namebar);
+         }
 
+             MaterialStyledDialog dialog = new MaterialStyledDialog.Builder(this)
+                     .setTitle("Awesome!")
+                     .setDescription("What can we improve? Your feedback is always welcome.")
+                     .setPositiveText("Go Down")
+                     .onPositive(new MaterialDialog.SingleButtonCallback(){
+                         @Override
+                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which)
+                         {
+                             stopService(new Intent(MainActivity.this, LocationUpdater.class));
+                             parent.addView(namebar);
+                             SlideView slideView = (SlideView) findViewById(R.id.slideView);
+                             slideView.setOnSlideCompleteListener(new SlideView.OnSlideCompleteListener() {
+                                 @Override
+                                 public void onSlideComplete(SlideView slideView) {
+                                     View namebar = findViewById(R.id.slideView);
+                                     ViewGroup parent = (ViewGroup) namebar.getParent();
+                                     if (parent != null) {
+                                         parent.removeView(namebar);
+                                     }
+                                     startService(new Intent(MainActivity.this, LocationUpdater.class));
+                                 }
+                             });
+                         }
+                     })
+                     .setNegativeText("Cancel")
+                     .build();
+
+             dialog.show();
+
+         }
+         else
+         {
+             if(isMyServiceRunning(LocationUpdater.class)==true) {
+                 View namebar = findViewById(R.id.slideView);
+                 ViewGroup parent = (ViewGroup) namebar.getParent();
+                 if (parent != null) {
+                     parent.removeView(namebar);
+                 }
+
+             }
+            else {
+                 SlideView slideView = (SlideView) findViewById(R.id.slideView);
+                 slideView.setOnSlideCompleteListener(new SlideView.OnSlideCompleteListener() {
+                     @Override
+                     public void onSlideComplete(SlideView slideView) {
+                         View namebar = findViewById(R.id.slideView);
+                         ViewGroup parent = (ViewGroup) namebar.getParent();
+                         if (parent != null) {
+                             parent.removeView(namebar);
+                         }
+                         startService(new Intent(MainActivity.this, LocationUpdater.class));
+                     }
+                 });
+             }
+         }
         //service Intent initialization
         i=new Intent(this, LocationUpdater.class);
 
@@ -145,7 +218,6 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
         Log.d("serial", "4");
 
-        registerReceiver(broadcastReceiver, new IntentFilter(LocationUpdater.BD_KEY));
         //To set status icon dark
         window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 
@@ -166,6 +238,8 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         transaction.commit();
         Log.d("serial", "afterccommit");
 
+
+
     }
 
     @Override
@@ -173,9 +247,9 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
 
         map = googleMap;
-        startService(i);
         //For location permission to show location for first time and move camera
         getLocationPermission();
+        map.getUiSettings().setMyLocationButtonEnabled(false);
 
 
     }
@@ -316,22 +390,20 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
        if (drawer.isDrawerOpen(GravityCompat.START)) {
            drawer.closeDrawer(GravityCompat.START);
        } else {
-              moveTaskToBack(true);
+           unregisterReceiver(broadcastReceiver);
+           moveTaskToBack(true);
        }
    }
     @Override
     protected void onStop() {
         Toast.makeText(this, "On Stop", Toast.LENGTH_SHORT).show();
         super.onStop();
-        if(flag==0) {
-            unregisterReceiver(broadcastReceiver);
-            stopService(i);
-        }
     }
 
     @Override
     protected void onDestroy() {
         Toast.makeText(this, "On Destroy", Toast.LENGTH_SHORT).show();
+        unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 
@@ -340,82 +412,18 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
     }
     @Override
     public void onResume() {
+        registerReceiver(broadcastReceiver, new IntentFilter(LocationUpdater.BD_KEY));
         Toast.makeText(this, "On Resume", Toast.LENGTH_SHORT).show();
         super.onResume();
-        if(flag==0) {
-            startService(i);
-            registerReceiver(broadcastReceiver, new IntentFilter(LocationUpdater.BD_KEY));
-        }
     }
-//Location send function
-    private class SendLocation extends AsyncTask<String, Void, String> {
-
-        protected void onPreExecute(){}
-
-        protected String doInBackground(String... arg0) {
-
-            try {
-
-                URL url = new URL(getResources().getString(R.string.gpsUpdate));// here is your URL path
-
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(15000 /* milliseconds */);
-                conn.setConnectTimeout(15000 /* milliseconds */);
-                conn.setRequestMethod("POST");
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                String cc = prefs.getString("countryCode", null);
-                String sc = prefs.getString("stateCode", null);
-                String restoredText = cc+sc+prefs.getString("vehicleno", null); //concatatinating countrycode+statecode+vehicleno
-                String restoredText11 = prefs.getString("phoneno1", null);
-
-                String s="reg="+restoredText+"_"+restoredText11+"&lat="+strtLan+"&lon="+strtLong;
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(os, "UTF-8"));
-                writer.write(s);
-
-                writer.flush();
-                writer.close();
-                os.close();
-
-                int responseCode=conn.getResponseCode();
-
-                if (responseCode == HttpsURLConnection.HTTP_OK) {
-                    flag=1;
-
-                    InputStream is = null;
-                    try {
-                        is = conn.getInputStream();
-                        int ch;
-                        StringBuffer sb = new StringBuffer();
-                        while ((ch = is.read()) != -1) {
-                            sb.append((char) ch);
-                        }
-                        return sb.toString();
-                    } catch (IOException e) {
-                        throw e;
-                    } finally {
-                        if (is != null) {
-                            is.close();
-                        }
-                    }
-
-                }
-                else {
-                    return new String("false : "+responseCode);
-                }
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
             }
-            catch(Exception e){
-                return new String("Exception: " + e.getMessage());
-            }
-
         }
-
-        @Override
-        protected void onPostExecute(String result) {
-            Log.d("task",result);
-        }
+        return false;
     }
 
 }

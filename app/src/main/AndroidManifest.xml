@@ -32,7 +32,11 @@
         <service
             android:name=".LocationUpdater"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true">
+            <intent-filter android:label="Location Service" >
+                 <action android:name="com.example.skdj.beta1"/>
+            </intent-filter>
+        </service>
 
         <activity android:name=".Update" android:screenOrientation="portrait"></activity>
     </application>
