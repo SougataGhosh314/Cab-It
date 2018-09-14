@@ -37,6 +37,29 @@
             android:layout_marginLeft="40dp"
             app:sv_animateSlideText="true"
             app:sv_reverseSlide="false"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show Contracts"
+            android:layout_centerHorizontal="true"
+            android:onClick="LoadContracts"
+            android:gravity="bottom"
+            android:layout_above="@id/slideView"
+            android:id="@+id/showContract"/>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_centerVertical="true"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:paddingEnd="@dimen/card_padding"
+            android:paddingLeft="@dimen/card_padding"
+            android:paddingRight="@dimen/card_padding"
+            android:paddingStart="@dimen/card_padding">
+
+        </android.support.v4.view.ViewPager>
+
 
     </RelativeLayout>
     <android.support.design.widget.NavigationView

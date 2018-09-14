@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.github.MAXDeliveryNG:slideview-1.1.0">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/slideview-1.1.0.aar/4304e62995a39f6947d8d315b51ddee5/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/slideview-1.1.0.aar/4304e62995a39f6947d8d315b51ddee5/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/slideview-1.1.0.aar/a0841c56632841a3c932e709ea51eee3/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/slideview-1.1.0.aar/a0841c56632841a3c932e709ea51eee3/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
